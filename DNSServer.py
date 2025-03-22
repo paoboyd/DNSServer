@@ -1,5 +1,7 @@
 #Paola O'Rourke
 #DNS server
+
+
 import dns.message
 import dns.rdatatype
 import dns.rdataclass
@@ -56,10 +58,10 @@ password = "po2156@nyu.com"
 input_string = "AlwaysWatching"
 
 encrypted_value = encrypt_with_aes(input_string, password, salt)  # exfil function
+
+#trying this out
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
 
-# Base64
-#encrypted_value_str = encrypted_value.decode('utf-8')  # Use the raw encrypted value as text
 
 # For future use
 def generate_sha256_hash(input_string):
@@ -108,7 +110,7 @@ dns_records = {
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],  # MX record
         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',  # AAAA record
         dns.rdatatype.NS: 'ns1.nyu.edu.',  # NS record
-        dns.rdatatype.TXT: str(encrypted_value),  # TXT record with encrypted secret data
+        dns.rdatatype.TXT: str(encrypted_value,),  # TXT record with encrypted secret data
     },
 }
     # Additional records can be added as needed
@@ -118,7 +120,7 @@ dns_records = {
 def run_dns_server():
     # Create a UDP socket and bind it to the local IP address (what unique IP address is used here, similar to webserver lab) and port (the standard port for DNS)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Research this
-    server_socket.bind(('127.0.01', 53)) #changed from local host
+    server_socket.bind(('127.0.0.1', 53)) #changed from local host
 
     while True:
         try:
@@ -149,6 +151,8 @@ def run_dns_server():
                     rdata = SOA(dns.rdataclass.IN,
                                 dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)  # follow format from previous line
                     rdata_list.append(rdata)
+
+
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
@@ -235,7 +239,7 @@ encrypted_value = encrypt_with_aes(input_string, password, salt)  # exfil functi
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
 
 #for text
-encrypted_value_str = base64.urlsafe_b64encode(encrypted_value).decode('utf-8')  # for DNS
+#encrypted_value_str = base64.urlsafe_b64encode(encrypted_value).decode('utf-8')  # for DNS
 
 
 # For future use
@@ -285,7 +289,7 @@ dns_records = {
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],  # MX record
         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',  # AAAA record
         dns.rdatatype.NS: 'ns1.nyu.edu.',  # NS record
-        dns.rdatatype.TXT: (encrypted_value_str,),  # TXT record with encrypted secret data
+        dns.rdatatype.TXT: str(encrypted_value,),  # TXT record with encrypted secret data
     },
 }
 
@@ -293,7 +297,7 @@ dns_records = {
 def run_dns_server():
     # Create a UDP socket and bind it to the local IP address (what unique IP address is used here, similar to webserver lab) and port (the standard port for DNS)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Research this
-    server_socket.bind(('localhost', 53)) #change back after to 53
+    server_socket.bind(('127.0.0.1', 53)) #change back after to 53
 
     while True:
         try:
