@@ -19,6 +19,23 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
 
+import dns.rdtypes.ANY
+from dns.rdtypes.ANY.MX import MX
+from dns.rdtypes.ANY.SOA import SOA
+import dns.rdata
+import socket
+import threading
+import signal
+import os
+import sys
+
+import hashlib
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import base64
+import ast
+
 
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
@@ -223,9 +240,9 @@ def decrypt_with_aes(encrypted_data, password, salt):
     return decrypted_data.decode('utf-8')
 
 
-salt = os.urandom(16)  # Remember it should be a byte-object
-password = "HelloTherePassword"
-input_string = "Input here!"
+salt = 'Tandon'  # Remember it should be a byte-object
+password = "po2156@nyu.edu"
+input_string = "AlwaysWatching"
 
 encrypted_value = encrypt_with_aes(input_string, password, salt)  # exfil function
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
