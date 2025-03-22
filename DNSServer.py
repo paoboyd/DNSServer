@@ -87,20 +87,20 @@ dns_records = {
 
 def run_dns_server():
     # Create a UDP socket and bind it to the local IP address (what unique IP address is used here, similar to webserver lab) and port (the standard port for DNS)
-    server_socket = socket.socket(socket.AF_INET, ????)  # Research this
-    server_socket.bind((?????, ????))
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Research this
+    server_socket.bind(('localhost', 53))
 
     while True:
         try:
             # Wait for incoming DNS requests
             data, addr = server_socket.recvfrom(1024)
             # Parse the request using the `dns.message.from_wire` method
-            request = ?????
+            request = dns.message.from_wire(data)
             # Create a response message using the `dns.message.make_response` method
-            response = ??????
+            response = dns.message.make_response(request)
 
             # Get the question from the request
-            question = request.question[???]
+            question = request.question[0]
             qname = question.name.to_text()
             qtype = question.rdtype
 
@@ -111,13 +111,13 @@ def run_dns_server():
 
                 rdata_list = []
 
-                if qtype == dns.rdatatype.??:
+                if qtype == dns.rdatatype.MX:
                     for pref, server in answer_data:
                         rdata_list.append(MX(dns.rdataclass.IN, dns.rdatatype.MX, pref, server))
-                elif qtype == dns.rdatatype.??:
-                    ??, ??, ??, ??, ??, ??, ?? = answer_data  # What is the record format? See dns_records dictionary. Assume we handle @, Class, TTL elsewhere. Do some research on SOA Records
+                elif qtype == dns.rdatatype.MX:
+                    mname, rname, serial, refresh, retry, expire, minimum = answer_data  # What is the record format? See dns_records dictionary. Assume we handle @, Class, TTL elsewhere. Do some research on SOA Records
                     rdata = SOA(dns.rdataclass.IN,
-                                dns.rdatatype.SOA, ??, ??, ??, ??, ??, ??, ??)  # follow format from previous line
+                                dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)  # follow format from previous line
                     rdata_list.append(rdata)
                 else:
                     if isinstance(answer_data, str):
@@ -133,7 +133,7 @@ def run_dns_server():
 
             # Send the response back to the client using the `server_socket.sendto` method and put the response to_wire(), return to the addr you received from
             print("Responding to request:", qname)
-            server_socket.???????
+            server_socket.sendto(response.to_wire(), addr)
             except KeyboardInterrupt:
             print('\nExiting...')
             server_socket.close()
