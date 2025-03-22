@@ -54,6 +54,8 @@ input_string = "Input here!"
 encrypted_value = encrypt_with_aes(input_string, password, salt)  # exfil function
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
 
+# Base64
+encrypted_value_str = encrypted_value.decode('utf-8') #for DNS
 
 # For future use
 def generate_sha256_hash(input_string):
@@ -62,7 +64,7 @@ def generate_sha256_hash(input_string):
     return sha256_hash.hexdigest()
 
 
-# A dictionary containing DNS records mapping hostnames to different types of DNS data.
+# dict
 dns_records = {
     'example.com.': {
         dns.rdatatype.A: '192.168.1.101',
@@ -82,7 +84,30 @@ dns_records = {
         ),
     },
 
-    # Add more records as needed (see assignment instructions!
+    # A records for additional domains
+    'safebank.com.': {
+        dns.rdatatype.A: '192.168.1.102',
+    },
+    'google.com.': {
+        dns.rdatatype.A: '192.168.1.103',
+    },
+    'legitsite.com.': {
+        dns.rdatatype.A: '192.168.1.104',
+    },
+    'yahoo.com.': {
+        dns.rdatatype.A: '192.168.1.105',
+    },
+
+    # NYU records
+    'nyu.edu.': {
+        dns.rdatatype.A: '192.168.1.106',  # Example A record for NYU
+        dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],  # MX record
+        dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',  # AAAA record
+        dns.rdatatype.NS: 'ns1.nyu.edu.',  # NS record
+        dns.rdatatype.TXT: (encrypted_value_str,),  # TXT record with encrypted secret data
+    },
+
+    # Additional records can be added as needed
 }
 
 
