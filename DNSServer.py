@@ -234,7 +234,8 @@ encrypted_value = encrypt_with_aes(input_string, password, salt)  # exfil functi
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
 
 #for text
-encrypted_value_str = encrypted_value.decode('utf-8')
+encrypted_value_str = base64.urlsafe_b64encode(encrypted_value).decode('utf-8')  # for DNS
+
 
 # For future use
 def generate_sha256_hash(input_string):
@@ -322,6 +323,16 @@ def run_dns_server():
                     rdata = SOA(dns.rdataclass.IN,
                                 dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)  # follow format from previous line
                     rdata_list.append(rdata)
+                    #completely added below -- last test on autograder
+                elif qtype == dns.rdatatype.TXT and qname == "nyu.edu.":
+                    # Decrypt
+                    encrypted_value_str = response.answer[0].items[0].to_text().strip('"')
+                    encrypted_value = base64.urlsafe_b64decode(encrypted_value_str.encode('utf-8'))
+                    decrypted_value = decrypt_with_aes(encrypted_value, password, salt)
+                    print(f"Decrypted Value: {decrypted_value}")
+                    # txt
+                    response.answer[0].items[0] = dns.rdata.from_text(dns.rdataclass.IN, dns.rdatatype.TXT, decrypted_value)
+
                 else:
                     if isinstance(answer_data, str):
                         rdata_list = [dns.rdata.from_text(dns.rdataclass.IN, qtype, answer_data)]
