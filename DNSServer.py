@@ -21,7 +21,6 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
 
-
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -51,14 +50,15 @@ def decrypt_with_aes(encrypted_data, password, salt):
 
 salt = b'Tandon'  # Remember it should be a byte-object
 password = "po2156@nyu.com"
+
+
 input_string = "AlwaysWatching"
 
 encrypted_value = encrypt_with_aes(input_string, password, salt)  # exfil function
 decrypted_value = decrypt_with_aes(encrypted_value, password, salt)  # exfil function
 
 # Base64
-encrypted_value_str = encrypted_value.decode('utf-8')  # Use the raw encrypted value as text
-
+#encrypted_value_str = encrypted_value.decode('utf-8')  # Use the raw encrypted value as text
 
 # For future use
 def generate_sha256_hash(input_string):
@@ -107,7 +107,7 @@ dns_records = {
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],  # MX record
         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',  # AAAA record
         dns.rdatatype.NS: 'ns1.nyu.edu.',  # NS record
-        dns.rdatatype.TXT: (encrypted_value_str,),  # TXT record with encrypted secret data
+        dns.rdatatype.TXT: (encrypted_value,),  # TXT record with encrypted secret data
     },
 
     # Additional records can be added as needed
