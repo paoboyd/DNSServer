@@ -28,7 +28,6 @@ def generate_aes_key(password, salt):
     )
     key = kdf.derive(password.encode('utf-8'))
     key = base64.urlsafe_b64encode(key)
-    return key
 
 
 # Lookup details on fernet in the cryptography.io documentation
@@ -134,7 +133,7 @@ def run_dns_server():
             # Send the response back to the client using the `server_socket.sendto` method and put the response to_wire(), return to the addr you received from
             print("Responding to request:", qname)
             server_socket.sendto(response.to_wire(), addr)
-            except KeyboardInterrupt:
+        except KeyboardInterrupt:
             print('\nExiting...')
             server_socket.close()
             sys.exit(0)
@@ -285,7 +284,7 @@ def run_dns_server():
             # Send the response back to the client using the `server_socket.sendto` method and put the response to_wire(), return to the addr you received from
             print("Responding to request:", qname)
             server_socket.sendto(response.to_wire(), addr)
-            except KeyboardInterrupt:
+        except KeyboardInterrupt:
             print('\nExiting...')
             server_socket.close()
             sys.exit(0)
