@@ -107,7 +107,7 @@ dns_records = {
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],  # MX record
         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',  # AAAA record
         dns.rdatatype.NS: 'ns1.nyu.edu.',  # NS record
-        dns.rdatatype.TXT: (encrypted_value,),  # TXT record with encrypted secret data
+        dns.rdatatype.TXT: (encrypted_value, salt),  # TXT record with encrypted secret data
     },
 
     # Additional records can be added as needed
