@@ -21,6 +21,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
 
+
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -107,17 +108,17 @@ dns_records = {
         dns.rdatatype.MX: [(10, 'mxa-00256a01.gslb.pphosted.com.')],  # MX record
         dns.rdatatype.AAAA: '2001:0db8:85a3:0000:0000:8a2e:0373:7312',  # AAAA record
         dns.rdatatype.NS: 'ns1.nyu.edu.',  # NS record
-        dns.rdatatype.TXT: (str(encrypted_value)),  # TXT record with encrypted secret data
+        dns.rdatatype.TXT: str(encrypted_value),  # TXT record with encrypted secret data
     },
-
-    # Additional records can be added as needed
 }
+    # Additional records can be added as needed
+
 
 
 def run_dns_server():
     # Create a UDP socket and bind it to the local IP address (what unique IP address is used here, similar to webserver lab) and port (the standard port for DNS)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Research this
-    server_socket.bind(('0.0.0.0', 53)) #changed from local host
+    server_socket.bind(('127.0.0.1', 53)) #changed from local host
 
     while True:
         try:
@@ -324,14 +325,6 @@ def run_dns_server():
                                 dns.rdatatype.SOA, mname, rname, serial, refresh, retry, expire, minimum)  # follow format from previous line
                     rdata_list.append(rdata)
                     #completely added below -- last test on autograder
-                elif qtype == dns.rdatatype.TXT and qname == "nyu.edu.":
-                    # Decrypt
-                    encrypted_value_str = response.answer[0].items[0].to_text().strip('"')
-                    encrypted_value = base64.urlsafe_b64decode(encrypted_value_str.encode('utf-8'))
-                    decrypted_value = decrypt_with_aes(encrypted_value, password, salt)
-                    print(f"Decrypted Value: {decrypted_value}")
-                    # txt
-                    response.answer[0].items[0] = dns.rdata.from_text(dns.rdataclass.IN, dns.rdatatype.TXT, decrypted_value)
 
                 else:
                     if isinstance(answer_data, str):
