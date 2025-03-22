@@ -19,6 +19,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 import base64
 import ast
 
+
 def generate_aes_key(password, salt):
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -28,6 +29,7 @@ def generate_aes_key(password, salt):
     )
     key = kdf.derive(password.encode('utf-8'))
     key = base64.urlsafe_b64encode(key)
+    return key #added
 
 
 # Lookup details on fernet in the cryptography.io documentation
@@ -238,7 +240,7 @@ dns_records = {
 def run_dns_server():
     # Create a UDP socket and bind it to the local IP address (what unique IP address is used here, similar to webserver lab) and port (the standard port for DNS)
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # Research this
-    server_socket.bind(('localhost', 53))
+    server_socket.bind(('localhost', 53)) #change back after to 53
 
     while True:
         try:
